@@ -1,0 +1,32 @@
+{
+  "name": "buildgap",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "pipeline:hn": "node scripts/pipeline/collect-hn.mjs",
+    "pipeline:github": "node scripts/pipeline/collect-github.mjs",
+    "pipeline:appstore": "node scripts/pipeline/collect-appstore.mjs",
+    "pipeline:normalize": "node scripts/pipeline/normalize.mjs",
+    "pipeline:enrich": "node scripts/pipeline/enrich-ideas.mjs",
+    "pipeline:push": "node scripts/pipeline/push-supabase.mjs",
+    "pipeline:collect": "npm run pipeline:hn && npm run pipeline:github && npm run pipeline:appstore && npm run pipeline:normalize"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.2",
+    "next": "^15.3.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.0"
+  }
+}

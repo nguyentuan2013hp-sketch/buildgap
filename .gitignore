@@ -1,0 +1,9 @@
+node_modules/
+.next/
+out/
+.env
+.env.local
+data/raw-*.json
+data/candidates.json
+data/subscribers.json
+*.log
