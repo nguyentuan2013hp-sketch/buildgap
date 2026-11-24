@@ -1,0 +1,674 @@
+[
+  {
+    "id": "live-001",
+    "slug": "evernote-bulk-migration-cleaner",
+    "title": "One-Click Evernote Exit & Clean Markdown/Obsidian/Notion Migrator",
+    "oneLiner": "Migrate 10+ years of Evernote notebooks, tags, and attachments into Notion, Obsidian, or Apple Notes cleanly—escaping $249/year renewals.",
+    "problemSummary": "Long-time Evernote users are leaving in waves after subscription hikes jumped from $69–$130/yr toward $249.99/yr alongside intrusive upsell popups and editor scrolling glitches. Moving thousands of legacy ENEX notes without breaking attachments, creation dates, or nested tags remains painful.",
+    "industrySlug": "productivity",
+    "industryName": "Productivity",
+    "productType": "Web Tool",
+    "buildTime": "1 Weekend",
+    "painScore": 94,
+    "willingnessToPay": "High",
+    "evidenceCount": 38,
+    "sources": ["App Store Reviews"],
+    "targetAudience": "Long-time Evernote subscribers (5–15 years of notes) switching to Obsidian, Notion, Craft, or Apple Notes",
+    "competitors": [
+      {
+        "name": "Evernote",
+        "slug": "evernote",
+        "weakness": "Sharp annual price increases (up to $249.99/yr), aggressive paywall popups on note open, and typing/scrolling glitches."
+      }
+    ],
+    "mvpScope": [
+      "Upload or drag-and-drop multiple .enex exports (local browser or desktop wrapper for privacy)",
+      "Preserve original created/updated timestamps, inline PDFs/images, checkboxes, and tag hierarchies",
+      "Export cleanly to Obsidian Markdown vault ZIP, Notion import bundle, or Apple Notes-ready HTML with a migration verification report"
+    ],
+    "monetizationModel": "Free up to 100 notes; $19–$29 one-time migration pass for unlimited notebooks",
+    "buildSpec": {
+      "prd": "Build a privacy-first Evernote (.enex) migration web app using Next.js + Web Workers (parsing XML in-browser so private notes never leave the user's machine). Show live stats of notes, attachments, broken links, and tags, then output a clean ZIP tailored for Obsidian, Notion, or Craft.",
+      "schema": "tables: licenses (id, email, license_key, plan, purchased_at), migration_telemetry (id, target_app, note_count, attachment_count, duration_ms, created_at).",
+      "prompt": "Build a Next.js + TypeScript client-side Evernote (.enex) converter. Parse ENEX XML inside a Web Worker using streaming XML parsing, convert ENML to clean Markdown with YAML frontmatter (title, created, updated, tags), extract base64 attachments into /attachments/ with clean filenames, and package a downloadable ZIP tailored for Obsidian or Notion."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-001a",
+        "source": "App Store Reviews",
+        "quote": "Been using Evernote for at least a decade. Bending Spoons made it better but they raised pricing from $69 to 129 a year, and now nearly doubling that to $249.99 a year!",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=281796108&type=Purple%20Software",
+        "author": "ImranZ",
+        "publishedAt": "2026-11-05",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-001b",
+        "source": "App Store Reviews",
+        "quote": "It used to be great, but now it’s really buggy, they jacked up the price, and I’m slowly transferring everything out of it. Great premise, destroyed!",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=281796108&type=Purple%20Software",
+        "author": "Tiggermvs",
+        "publishedAt": "2026-11-22",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-001c",
+        "source": "App Store Reviews",
+        "quote": "After two years of paying $130(!!!!!) a year which already seemed ridiculously high for a notes app, that particular 'plan' was eliminated and they automatically billed me at the new, more expensive plan which was NEARLY DOUBLE THE COST.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=281796108&type=Purple%20Software",
+        "author": "Britt Kaye",
+        "publishedAt": "2026-10-23",
+        "isFreePreview": false
+      }
+    ],
+    "lastSeenAt": "2026-11-22",
+    "isSampleData": false
+  },
+  {
+    "id": "live-002",
+    "slug": "cross-agent-client-context-hub",
+    "title": "Cross-Agent Memory & Client Context Sync for Cursor, Claude Code & Codex",
+    "oneLiner": "Maintain one shared source of truth for client rules, architectural decisions, and reusable skills across every AI coding tool.",
+    "problemSummary": "Consultants and developers using multiple AI coding tools (Claude Code, Cursor, Codex, Claude Desktop) waste hours re-explaining client rules, past decisions, and custom skills every time they switch tools or hit rate limits.",
+    "industrySlug": "developer-tools",
+    "industryName": "Developer Tools",
+    "productType": "Micro-SaaS",
+    "buildTime": "1 Weekend",
+    "painScore": 92,
+    "willingnessToPay": "High",
+    "evidenceCount": 14,
+    "sources": ["Hacker News", "GitHub Issues"],
+    "targetAudience": "AI-assisted freelance developers, dev agencies, and engineers switching between Claude Code, Cursor, and Codex",
+    "competitors": [
+      {
+        "name": "Claude Code",
+        "slug": "claude-code",
+        "weakness": "Skills and local context files do not automatically sync between Claude Desktop, Claude Code CLI, and other IDEs."
+      }
+    ],
+    "mvpScope": [
+      "Web dashboard + lightweight CLI that stores per-client rules, architecture decisions, and reusable skills in Git-backed Markdown",
+      "One-command sync (`ctx sync`) that compiles rules into `.cursorrules`, `CLAUDE.md`, `AGENTS.md`, and skill folders automatically",
+      "Encrypted team/client profiles so freelancers switch client contexts in one command without leaking rules across projects"
+    ],
+    "monetizationModel": "Free for 1 project; $12/mo solo pro or $39 one-time CLI + sync license",
+    "buildSpec": {
+      "prd": "Build a Next.js + Supabase dashboard paired with a Node.js CLI. Users define client workspaces containing architecture decisions, coding standards, and reusable skills. Running `ctx pull <client>` writes native config files for Cursor, Claude Code, and Codex while keeping changes versioned.",
+      "schema": "tables: workspaces (id, owner_id, slug, name), context_blocks (id, workspace_id, category, title, content_md, updated_at), skills (id, workspace_id, name, content_md), sync_tokens (id, user_id, token_hash, last_used_at).",
+      "prompt": "Build a Next.js + TypeScript + Supabase app and companion Node CLI that syncs AI coding context across Cursor (.cursor/rules), Claude Code (CLAUDE.md & skills), and Codex (AGENTS.md). Include client workspace isolation, version diffing, and one-command CLI pull/push."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-002a",
+        "source": "Hacker News",
+        "quote": "Like many of you I work with AI agents every day and across several clients. The major time cost for me is re-explaining context and past decisions, client rules, that we already do. Every tool has its own memory.",
+        "sourceUrl": "https://news.ycombinator.com/item?id=50403153",
+        "author": "Michel_Aventin",
+        "publishedAt": "2026-11-07",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-002b",
+        "source": "GitHub Issues",
+        "quote": "[FEATURE] Sync Skills between Claude Desktop and Claude Code CLI (173+ community upvotes requesting seamless skill syncing across surfaces).",
+        "sourceUrl": "https://github.com/anthropics/claude-code/issues/20697",
+        "author": "meCodeUp",
+        "publishedAt": "2026-01-25",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-002c",
+        "source": "Hacker News",
+        "quote": "Earlier this year, my co-founder and I found ourselves frequently switching between different coding agents (Claude Code, Codex, Cursor) anytime we ran out of shaky usage limits or a newer model came out.",
+        "sourceUrl": "https://news.ycombinator.com/item?id=50182883",
+        "author": "shakshukan",
+        "publishedAt": "2026-10-21",
+        "isFreePreview": false
+      }
+    ],
+    "lastSeenAt": "2026-11-07",
+    "isSampleData": false
+  },
+  {
+    "id": "live-003",
+    "slug": "ai-cli-multi-account-profile-manager",
+    "title": "Multi-Account & Connector Profile Switcher for AI Coding CLIs",
+    "oneLiner": "Switch cleanly between personal, freelance, and employer Claude Code / AI CLI accounts and connectors in one command.",
+    "problemSummary": "Over 2,100 developers on GitHub upvoted feature requests to manage multiple accounts and multiple same-service connectors (e.g., personal vs. work GitHub/Slack/Claude accounts) without manually logging out and wiping credentials every time.",
+    "industrySlug": "developer-tools",
+    "industryName": "Developer Tools",
+    "productType": "CLI",
+    "buildTime": "1 Day",
+    "painScore": 91,
+    "willingnessToPay": "Medium",
+    "evidenceCount": 9,
+    "sources": ["GitHub Issues"],
+    "targetAudience": "Consultants, contractors, and engineers separating personal and work AI CLI accounts",
+    "competitors": [
+      {
+        "name": "Claude Code",
+        "slug": "claude-code",
+        "weakness": "Lacks built-in multi-account profile switching and multi-tenant connector isolation per directory."
+      }
+    ],
+    "mvpScope": [
+      "Isolated profile directories (`~/.ai-profiles/work`, `~/.ai-profiles/personal`) with safe env/config directory switching",
+      "Auto-switch active profile based on current Git directory (`.aiprofile` file, like `.nvmrc`)",
+      "Menu-bar status indicator (optional desktop wrapper) showing active account before sending prompts"
+    ],
+    "monetizationModel": "Open-source CLI free; $19 one-time macOS/Windows tray app with usage/quota tracker",
+    "buildSpec": {
+      "prd": "Create a zero-dependency Node/TypeScript CLI (`aiprofile`) that manages isolated config directories for AI coding CLIs, detects per-folder `.aiprofile` files on shell `cd`, and wraps commands with the selected profile's config path and connector set.",
+      "schema": "local JSON config (~/.aiprofile/registry.json): profiles ([{ name, configDir, matchPaths, connectorPreset, labelColor }]).",
+      "prompt": "Build a TypeScript CLI named `aiprofile` that lets developers switch isolated config profiles for AI coding CLIs per project directory. Support `init`, `add`, `use`, `status`, directory-based auto-detection (like direnv/nvm), and safe isolated environment variable execution."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-003a",
+        "source": "GitHub Issues",
+        "quote": "[FEATURE] Add the ability to manage multiple Claude accounts within the Claude Code CLI (1,456+ reactions from developers juggling work and personal accounts).",
+        "sourceUrl": "https://github.com/anthropics/claude-code/issues/18435",
+        "author": "Agentic-Marketer",
+        "publishedAt": "2026-01-15",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-003b",
+        "source": "GitHub Issues",
+        "quote": "[FEATURE] Support multiple Connector accounts (same connector, different accounts — 702+ reactions).",
+        "sourceUrl": "https://github.com/anthropics/claude-code/issues/27302",
+        "author": "nathanmargaglio",
+        "publishedAt": "2026-02-21",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-02-21",
+    "isSampleData": false
+  },
+  {
+    "id": "live-004",
+    "slug": "solo-simple-mobile-invoicing",
+    "title": "Fast Mobile-First Invoicing & Expense App for Self-Employed Contractors",
+    "oneLiner": "A dead-simple replacement for the discontinued QuickBooks Self-Employed app—instant offline-tolerant invoice entry that never wipes your draft.",
+    "problemSummary": "Solo contractors forced off QuickBooks Self-Employed into full QuickBooks Accounting complain about constant app freezes, confusing category clutter, and invoice forms that erase entered data when a validation error happens.",
+    "industrySlug": "finance",
+    "industryName": "Finance & Accounting",
+    "productType": "Micro-SaaS",
+    "buildTime": "1 Weekend",
+    "painScore": 89,
+    "willingnessToPay": "High",
+    "evidenceCount": 22,
+    "sources": ["App Store Reviews"],
+    "targetAudience": "Self-employed contractors, tradespeople, solo freelancers who only need fast invoicing + simple expense categories",
+    "competitors": [
+      {
+        "name": "QuickBooks Accounting",
+        "slug": "quickbooks",
+        "weakness": "Discontinued Self-Employed tier, slow/freezing mobile app, and unforgiving invoice entry that discards drafts on error."
+      }
+    ],
+    "mvpScope": [
+      "Mobile-first PWA with instant local draft autosave (never loses line items if signal drops or a field has a typo)",
+      "1-tap repeat client & saved service line items + instant PDF/Stripe payment link sharing via SMS or email",
+      "Simple 1-click year-end CSV/PDF tax export for accountants (no double-entry accounting jargon)"
+    ],
+    "monetizationModel": "Free up to 3 invoices/month; $9/mo flat unlimited invoices & expense snapshotting",
+    "buildSpec": {
+      "prd": "Build a mobile-first Next.js PWA + Supabase invoicing app tailored for solo contractors. Persist every keystroke in IndexedDB before syncing to Supabase so drafts never disappear. Include client presets, instant PDF generation, Stripe Payment Link embedding, and simple expense categorization.",
+      "schema": "tables: clients (id, user_id, name, email, phone, address), invoices (id, user_id, client_id, number, status, items_json, total_cents, due_date, stripe_link, updated_at), expenses (id, user_id, category, amount_cents, receipt_url, incurred_at).",
+      "prompt": "Build a mobile-first Next.js PWA invoicing app for solo freelancers using Supabase and Tailwind CSS. Core requirements: automatic IndexedDB draft persistence so form data is never lost, clean inline validation, 1-click PDF invoice export, payment status tracking, and simple CSV export for tax season."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-004a",
+        "source": "App Store Reviews",
+        "quote": "Just switched from QuickBooks self employed app, which is no longer available. It is way less organized and way less intuitive than the self employed app. It is harder to find categories.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=584606479&type=Purple%20Software",
+        "author": "BuffaloExpat",
+        "publishedAt": "2026-11-18",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-004b",
+        "source": "App Store Reviews",
+        "quote": "Entries get erased if there’s an error without any chance to edit. The field rules are not obvious either. This non user friendly feature has wasted too much of my time.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=584606479&type=Purple%20Software",
+        "author": "Grainy day",
+        "publishedAt": "2026-11-19",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-004c",
+        "source": "App Store Reviews",
+        "quote": "This app constantly freezes when you try to open it. Sometimes to the point it won't open at all and you have to go back to the office and enter data through the desktop version.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=584606479&type=Purple%20Software",
+        "author": "GreggJN",
+        "publishedAt": "2026-11-21",
+        "isFreePreview": false
+      }
+    ],
+    "lastSeenAt": "2026-11-21",
+    "isSampleData": false
+  },
+  {
+    "id": "live-005",
+    "slug": "frictionless-pdf-esign-tool",
+    "title": "No-Login Browser PDF E-Signature Tool with Resizable Stylus Signing",
+    "oneLiner": "Send and sign PDF contracts in any mobile or iPad browser with freely resizable signatures, EU date formats, and zero recipient app installs.",
+    "problemSummary": "Users signing agreements on DocuSign complain about frozen signature fields, tiny auto-locked signatures that cannot be resized, broken iPad stylus signing from email links, and rigid US-only date formatting.",
+    "industrySlug": "legal-docs",
+    "industryName": "Legal & Documents",
+    "productType": "Web Tool",
+    "buildTime": "1 Weekend",
+    "painScore": 88,
+    "willingnessToPay": "High",
+    "evidenceCount": 9,
+    "sources": ["App Store Reviews"],
+    "targetAudience": "Freelancers, boutique agencies, landlords, and EU/UK small businesses sending simple contracts",
+    "competitors": [
+      {
+        "name": "DocuSign",
+        "slug": "docusign",
+        "weakness": "Clunky mobile signing, auto-locked tiny signature boxes, iPad stylus issues from email links, and inflexible US date formatting."
+      }
+    ],
+    "mvpScope": [
+      "Upload PDF, drag/resize signature, initials, and locale-aware date fields (DD/MM/YYYY or MM/DD/YYYY)",
+      "Send 1-click browser signing link—recipients draw smoothly with mouse, finger, or Apple Pencil with zero app download or account",
+      "Embed vector signature + SHA-256 audit certificate page into the final signed PDF"
+    ],
+    "monetizationModel": "Free 3 docs/month; $12/mo flat unlimited documents or $29 pack of 100 envelopes",
+    "buildSpec": {
+      "prd": "Build a clean browser e-signature app in Next.js + pdf-lib + HTML5 Canvas (Pointer Events for Apple Pencil/touch pressure). Senders place resizable fields and choose date locale; recipients open a signed token URL, draw/resize freely, and both parties receive the flattened PDF with an audit trail.",
+      "schema": "tables: documents (id, owner_id, title, original_pdf_url, signed_pdf_url, date_format, status, sha256_hash), signers (id, document_id, email, token, signed_at, ip_address), fields (id, document_id, signer_id, type, page, x, y, width, height, value).",
+      "prompt": "Build a Next.js + TypeScript PDF e-signature web app using pdf-lib and Pointer Events canvas. Support uploading a PDF, placing freely resizable signature and locale-formatted date fields (EU DD/MM/YYYY and US MM/DD/YYYY), zero-login recipient signing that works smoothly with Apple Pencil/iPad, and generating a tamper-evident signed PDF with an audit trail page."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-005a",
+        "source": "App Store Reviews",
+        "quote": "Signatures don’t save properly or fail to use your default signature... Also good luck trying to resize your signature. As the app seems to auto lock the signature size.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=474990205&type=Purple%20Software",
+        "author": "Emrique_0",
+        "publishedAt": "2026-11-09",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-005b",
+        "source": "App Store Reviews",
+        "quote": "Signing straight from email did not allow me to actually sign on an iPad with a stylus. Picked up some default signature for me. Could not use finger either.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=474990205&type=Purple%20Software",
+        "author": "portland9x",
+        "publishedAt": "2026-10-30",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-005c",
+        "source": "App Store Reviews",
+        "quote": "The error message about duplicate recipients isn’t helpful and doesn’t make sense. Someone needs to make a better alternative.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=474990205&type=Purple%20Software",
+        "author": "Ella-Colocado",
+        "publishedAt": "2026-10-17",
+        "isFreePreview": false
+      }
+    ],
+    "lastSeenAt": "2026-11-19",
+    "isSampleData": false
+  },
+  {
+    "id": "live-006",
+    "slug": "strict-blockout-calendly-alternative",
+    "title": "Double-Booking-Proof Scheduling Link with One-Tap Day Lockouts",
+    "oneLiner": "A fast, reliable booking page for consultants where blocked days and multi-calendar conflicts are strictly enforced before confirming slots.",
+    "problemSummary": "Service professionals using Calendly report blocked-off days still accepting bookings, sync errors after OS updates, and repeated login friction just to check who booked next.",
+    "industrySlug": "scheduling-sales",
+    "industryName": "Scheduling & Sales",
+    "productType": "Micro-SaaS",
+    "buildTime": "1 Weekend",
+    "painScore": 84,
+    "willingnessToPay": "High",
+    "evidenceCount": 22,
+    "sources": ["App Store Reviews"],
+    "targetAudience": "Consultants, coaches, sales reps, and solo service providers managing multiple Google/Outlook calendars",
+    "competitors": [
+      {
+        "name": "Calendly",
+        "slug": "calendly",
+        "weakness": "Users report appointments getting booked on blocked days, mobile view errors, and recurring login friction."
+      }
+    ],
+    "mvpScope": [
+      "Real-time free/busy re-verification against all connected calendars right at booking submit time (atomic lock prevents double-booking)",
+      "One-tap 'Block Today / Block Week' emergency switch + persistent magic-link mobile agenda view",
+      "Simple booking page with buffer times, timezone auto-detection, and automatic Google Meet/Zoom link creation"
+    ],
+    "monetizationModel": "Free 1 calendar; $10/mo unlimited calendars & custom branding",
+    "buildSpec": {
+      "prd": "Build a Next.js + Supabase scheduling app integrated with Google Calendar API. Perform live free/busy checks both when rendering slots and inside an atomic server transaction on submit, plus provide a fast one-tap blackout date manager and daily agenda summary.",
+      "schema": "tables: hosts (id, slug, timezone, google_refresh_token), blackout_dates (id, host_id, date, reason), event_types (id, host_id, slug, duration_min, buffer_min), bookings (id, event_type_id, guest_email, starts_at, ends_at, status).",
+      "prompt": "Create a Next.js + TypeScript + Supabase appointment scheduler. Implement Google Calendar multi-calendar free/busy checks, strict blackout-date enforcement that re-validates availability atomically at submit time to prevent double bookings, buffer rules, and a clean mobile agenda view."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-006a",
+        "source": "App Store Reviews",
+        "quote": "When I block a day off, it still schedules me with appointments.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=1451094657&type=Purple%20Software",
+        "author": "OGEE $",
+        "publishedAt": "2026-10-20",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-006b",
+        "source": "App Store Reviews",
+        "quote": "It does not allow me to see any of my appointments that’s scheduled in Calendly.com... I would like to use the app without always having to login.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=1451094657&type=Purple%20Software",
+        "author": "ladykee",
+        "publishedAt": "2026-10-11",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-11-21",
+    "isSampleData": false
+  },
+  {
+    "id": "live-007",
+    "slug": "vibe-coding-architecture-guard",
+    "title": "AI-Code Architecture Drift & Flow Audit Gate for Vibe Coders",
+    "oneLiner": "Connect your GitHub repo to catch broken user flows, duplicated logic, and unreviewed AI spaghetti code before shipping to production.",
+    "problemSummary": "Developers relying heavily on Claude Code and Cursor report losing mental visibility over architecture and user flows as AI writes most of the codebase, causing regressions and spiraling technical debt.",
+    "industrySlug": "developer-tools",
+    "industryName": "Developer Tools",
+    "productType": "Web Tool",
+    "buildTime": "1 Weekend",
+    "painScore": 83,
+    "willingnessToPay": "High",
+    "evidenceCount": 8,
+    "sources": ["Hacker News"],
+    "targetAudience": "Indie hackers, solo founders, and engineering leads shipping AI-generated codebases",
+    "competitors": [
+      {
+        "name": "Generic AI PR Reviewers",
+        "slug": "ai-pr-reviewers",
+        "weakness": "Leave noisy line-by-line nitpicks instead of mapping end-to-end user flows, architecture boundaries, and missing edge-case tests."
+      }
+    ],
+    "mvpScope": [
+      "GitHub App that scans every PR and generates a plain-English visual flow map + architecture diff",
+      "Flags silent auth/permission gaps, duplicated helpers, dead routes, and untested critical paths",
+      "Outputs a ready-to-paste remediation prompt for Claude Code / Cursor to fix the exact issues"
+    ],
+    "monetizationModel": "Free 1 public repo; $19/mo for unlimited private repos & PR checks",
+    "buildSpec": {
+      "prd": "Build a Next.js + GitHub App that hooks into pull_request events, builds a lightweight AST/route/schema graph of the repository, detects architectural drift and unprotected routes, and posts a concise PR comment with a Mermaid flow diagram and a copyable fix prompt.",
+      "schema": "tables: repos (id, owner_id, github_repo_id, full_name, rules_md), audits (id, repo_id, pr_number, risk_score, findings_json, mermaid_graph, fix_prompt, created_at).",
+      "prompt": "Build a Next.js + TypeScript GitHub App that audits AI-generated pull requests for architecture drift and broken user flows. Parse changed routes/APIs/schemas, identify auth gaps or duplicated logic, render a Mermaid flow diff, and output a targeted remediation prompt for Cursor/Claude Code."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-007a",
+        "source": "Hacker News",
+        "quote": "In the past when I wrote all the code manually, it was always carefully reviewed and architected, with all possible flows carefully mapped out. Now, my code is mostly AI written which has led to things going out of control.",
+        "sourceUrl": "https://news.ycombinator.com/item?id=50444380",
+        "author": "nkcodes",
+        "publishedAt": "2026-11-10",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-11-10",
+    "isSampleData": false
+  },
+  {
+    "id": "live-008",
+    "slug": "sketch-to-wireframe-draw-fast-alt",
+    "title": "Real-Time Rough Sketch to Clean Wireframe & SVG Canvas",
+    "oneLiner": "Draw rough UI boxes on an iPad or trackpad and watch them snap into crisp, editable wireframes and React/Tailwind mockups in real time.",
+    "problemSummary": "Designers and founders miss Tldraw's discontinued Draw Fast experiment and still struggle to find a fast canvas that converts messy hand-drawn sketches into clean, high-fidelity wireframes or vector illustrations in near real time.",
+    "industrySlug": "design-creative",
+    "industryName": "Design & Creative",
+    "productType": "Web Tool",
+    "buildTime": "1 Weekend",
+    "painScore": 82,
+    "willingnessToPay": "Medium",
+    "evidenceCount": 6,
+    "sources": ["Hacker News"],
+    "targetAudience": "Product designers, solo founders, and indie builders brainstorming UI wireframes on iPad or desktop",
+    "competitors": [
+      {
+        "name": "Tldraw Draw Fast",
+        "slug": "tldraw-draw-fast",
+        "weakness": "Experimental feature was shut down in 2024, leaving a direct gap for live sketch-to-wireframe workflows."
+      }
+    ],
+    "mvpScope": [
+      "Split-screen iPad/touch-friendly drawing canvas (left) + live rendered wireframe preview (right)",
+      "Debounced stroke-to-image / stroke-to-SVG generation (< 1.5s latency via fast vision/diffusion endpoint)",
+      "One-click export to clean SVG, Figma-pasteable frames, or React + Tailwind starter component"
+    ],
+    "monetizationModel": "Free 15 generations/day; $15/mo unlimited live canvas + code export",
+    "buildSpec": {
+      "prd": "Build a Next.js split-pane canvas app using Pointer Events (supporting Apple Pencil) on the left and a live debounced wireframe renderer on the right. Every 800ms after stroke end, send the canvas snapshot + style preset ('Clean Wireframe' / 'SaaS UI' / 'Vector Illustration') to a fast multimodal/image endpoint and let users export SVG or Tailwind JSX.",
+      "schema": "tables: boards (id, owner_id, title, strokes_json, last_output_svg, style_preset, updated_at), credits (user_id, balance, plan).",
+      "prompt": "Create a Next.js + TypeScript split-screen web app: a responsive Apple-Pencil-ready sketch canvas on the left and a live wireframe/UI preview on the right. Debounce canvas exports on stroke end, call a vision/code-gen API to render clean Tailwind HTML or SVG wireframes, and provide 1-click Copy SVG and Copy Tailwind Code buttons."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-008a",
+        "source": "Hacker News",
+        "quote": "I’ve been looking for a tool that can translate rough sketches on my iPad to higher fidelity wireframes or illustrations in near real time. The closest was Tldraw that shuttered their Draw Fast experiment in 2024.",
+        "sourceUrl": "https://news.ycombinator.com/item?id=50280452",
+        "author": "outlore",
+        "publishedAt": "2026-10-28",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-10-28",
+    "isSampleData": false
+  },
+  {
+    "id": "live-009",
+    "slug": "local-first-fast-trello-alternative",
+    "title": "Zero-Lag Local-First Kanban Board with Self-Serve Billing",
+    "oneLiner": "A snappy, offline-capable Kanban board for small teams—no card freezes, no constant re-login prompts, and 1-click plan changes.",
+    "problemSummary": "Trello users complain about mobile/web card freezes requiring reinstalls, relentless re-login loops, and frustrating billing/plan-change friction with unreachable support.",
+    "industrySlug": "productivity",
+    "industryName": "Productivity",
+    "productType": "Web Tool",
+    "buildTime": "1 Weekend",
+    "painScore": 81,
+    "willingnessToPay": "Medium",
+    "evidenceCount": 25,
+    "sources": ["App Store Reviews"],
+    "targetAudience": "Small teams, solo builders, and operations managers who want simple fast Kanban boards without enterprise bloat",
+    "competitors": [
+      {
+        "name": "Trello",
+        "slug": "trello",
+        "weakness": "Card freezing glitches, frequent forced sign-ins, and difficult self-serve plan management."
+      }
+    ],
+    "mvpScope": [
+      "Local-first IndexedDB state engine with instant drag-and-drop and background Supabase sync",
+      "1-click Trello JSON board importer so users switch in under 60 seconds",
+      "Transparent 1-click upgrade/downgrade/cancel billing portal directly inside settings"
+    ],
+    "monetizationModel": "Free unlimited personal boards; $6/user/mo for shared team boards",
+    "buildSpec": {
+      "prd": "Build a local-first Kanban board in Next.js + IndexedDB + Supabase Realtime. All card opens and drags render optimistically in <16ms, sync silently when online, and include a one-click Trello JSON importer.",
+      "schema": "tables: boards (id, owner_id, title, created_at), columns (id, board_id, title, position), cards (id, column_id, title, description_md, position, labels, updated_at).",
+      "prompt": "Build a local-first Kanban board web app in Next.js + TypeScript + Tailwind CSS with optimistic IndexedDB storage, drag-and-drop columns and cards, keyboard shortcuts, and a 1-click Trello JSON export importer."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-009a",
+        "source": "App Store Reviews",
+        "quote": "The app will freeze on a card I have opened and I close the application reopen it just for it to be stuck. I then have to delete the app and reinstall it.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=461504587&type=Purple%20Software",
+        "author": "dravenb88",
+        "publishedAt": "2026-11-11",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-009b",
+        "source": "App Store Reviews",
+        "quote": "I’m attempting to change plans and it’s impossible to do on your own and virtually impossible to do with assistance.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=461504587&type=Purple%20Software",
+        "author": "meetuprocks",
+        "publishedAt": "2026-10-26",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-11-11",
+    "isSampleData": false
+  },
+  {
+    "id": "live-010",
+    "slug": "kobo-audiobookshelf-sync-bridge",
+    "title": "Wireless Kobo E-Reader Sync Bridge for Self-Hosted Ebook Libraries",
+    "oneLiner": "Sync ebooks, reading progress, and collections directly between Audiobookshelf/Calibre libraries and Kobo e-readers over Wi-Fi.",
+    "problemSummary": "Over 270 self-hosting readers upvoted Kobo sync support on Audiobookshelf because Kobo e-readers lack Kindle's send-to-email workflow and require clunky USB cables or manual Calibre-Web workarounds.",
+    "industrySlug": "media-consumer",
+    "industryName": "Media & Reading",
+    "productType": "CLI",
+    "buildTime": "1 Day",
+    "painScore": 79,
+    "willingnessToPay": "Low",
+    "evidenceCount": 5,
+    "sources": ["GitHub Issues"],
+    "targetAudience": "Self-hosted Audiobookshelf / Calibre users who own Kobo e-readers",
+    "competitors": [
+      {
+        "name": "Audiobookshelf",
+        "slug": "audiobookshelf",
+        "weakness": "Send-to-ereader relies on email delivery, which Kobo devices do not natively support."
+      }
+    ],
+    "mvpScope": [
+      "Lightweight Docker container / Node service implementing Kobo's sync API proxy endpoint",
+      "Connects to Audiobookshelf API to convert EPUBs to KEPUB on the fly and push selected shelves to Kobo",
+      "Two-way reading progress sync back to the library server"
+    ],
+    "monetizationModel": "Open-source self-hosted Docker image + $15 one-time pro bundle with automatic EPUB-to-KEPUB optimization & hosted relay",
+    "buildSpec": {
+      "prd": "Build a lightweight Node.js + Docker companion bridge that authenticates with an Audiobookshelf server and exposes a Kobo-compatible sync API endpoint (`api_endpoint` override in Kobo config) to sync collections, download KEPUB files wirelessly, and report reading state.",
+      "schema": "SQLite tables: synced_books (abs_item_id, kobo_entitlement_id, kepub_path, progress_pct, updated_at), devices (id, auth_token, last_sync_at).",
+      "prompt": "Create a lightweight Node.js + TypeScript Docker service that bridges Audiobookshelf's REST API to Kobo e-reader Wi-Fi sync endpoints. Include library shelf mapping, on-the-fly EPUB-to-KEPUB packaging, and SQLite sync state tracking."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-010a",
+        "source": "GitHub Issues",
+        "quote": "Currently send to ereader only supports via email. However, Kobo ereaders don't support this option to import books (274+ community reactions).",
+        "sourceUrl": "https://github.com/advplyr/audiobookshelf/issues/3504",
+        "author": "emteedubs",
+        "publishedAt": "2024-10-12",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-11-24",
+    "isSampleData": false
+  },
+  {
+    "id": "live-011",
+    "slug": "notion-fast-tree-navigator",
+    "title": "Clean Tree Sidebar & Command Palette Extension for Heavy Notion Users",
+    "oneLiner": "Fix confusing Notion nested-page navigation and cluttered 'Recent' menus with a pinned, keyboard-first tree navigator.",
+    "problemSummary": "Power users in Notion complain that UI redesigns hide sub-pages under repetitive 'Recent' lists and break right-sidebar / side-peek workflows on tablets and wide screens.",
+    "industrySlug": "productivity",
+    "industryName": "Productivity",
+    "productType": "Chrome Extension",
+    "buildTime": "1 Day",
+    "painScore": 78,
+    "willingnessToPay": "Medium",
+    "evidenceCount": 14,
+    "sources": ["App Store Reviews"],
+    "targetAudience": "Knowledge workers, ops managers, and solo founders managing 100+ nested Notion pages",
+    "competitors": [
+      {
+        "name": "Notion",
+        "slug": "notion",
+        "weakness": "Confusing nested sub-page discovery, noisy 'Recent' sidebar duplication, and inconsistent side-peek behavior."
+      }
+    ],
+    "mvpScope": [
+      "Manifest V3 Chrome Extension injecting a clean collapsible tree drawer and breadcrumb bar on notion.so",
+      "Instant fuzzy jump (`Cmd+J`) strictly scoped to pinned workspaces & sub-pages (hiding cluttered Recent items)",
+      "Optional compact focus mode that locks sidebar width and preserves open folder state across reloads"
+    ],
+    "monetizationModel": "Free basic tree view; $14 one-time license for saved workspace presets & keyboard macros",
+    "buildSpec": {
+      "prd": "Build a Manifest V3 Chrome Extension targeting `https://www.notion.so/*` using TypeScript + React Shadow DOM overlay. Read the active workspace page hierarchy (via DOM or optional Notion API token), persist expanded folders in chrome.storage.local, and provide a fast keyboard switcher.",
+      "schema": "chrome.storage.local: pinned_pages ([{ id, title, url, folder }]), preferences ({ hideRecent, compactSidebar, shortcut }).",
+      "prompt": "Build a Manifest V3 Chrome Extension in TypeScript + React for notion.so that adds a clean, persistent nested-page tree sidebar and Cmd+J fuzzy navigator inside a Shadow DOM container without breaking Notion's native editor shortcuts."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-011a",
+        "source": "App Store Reviews",
+        "quote": "The new edit inside of Notion has made it very difficult to find the pages that are underneath my pages. The navigation is confusing because of the repetition where it says recent.",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=1232780281&type=Purple%20Software",
+        "author": "Danie Dev",
+        "publishedAt": "2026-11-16",
+        "isFreePreview": true
+      },
+      {
+        "id": "ev-live-011b",
+        "source": "App Store Reviews",
+        "quote": "The sidebar doesn’t work properly at all, you can’t access the right sidebar, the various open page as options don’t work (side peek etc.).",
+        "sourceUrl": "https://itunes.apple.com/us/review?id=1232780281&type=Purple%20Software",
+        "author": "SirCC",
+        "publishedAt": "2026-11-18",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-11-18",
+    "isSampleData": false
+  },
+  {
+    "id": "live-012",
+    "slug": "gcp-bigquery-billing-exporter-kit",
+    "title": "Automated Cloud Billing Export & Anomaly Alert Starter for DevOps Teams",
+    "oneLiner": "Stop clicking through GCP/AWS billing consoles manually—deploy reproducible cost-export pipelines and Slack spike alerts in 5 minutes.",
+    "problemSummary": "DevOps teams managing multi-project cloud infrastructure still lack clean, automated Infrastructure-as-Code workflows for exporting billing data into analytics tables and catching sudden AI/API spend spikes early.",
+    "industrySlug": "developer-tools",
+    "industryName": "Developer Tools",
+    "productType": "CLI",
+    "buildTime": "1 Day",
+    "painScore": 76,
+    "willingnessToPay": "High",
+    "evidenceCount": 6,
+    "sources": ["GitHub Issues"],
+    "targetAudience": "Startups, DevOps engineers, and agencies managing multiple GCP/AWS client billing accounts",
+    "competitors": [
+      {
+        "name": "Terraform Google Provider",
+        "slug": "terraform-google",
+        "weakness": "Long-standing open gap (181+ upvotes) lacking native declarative resources to wire up GCP billing exports to BigQuery."
+      }
+    ],
+    "mvpScope": [
+      "CLI wizard that verifies GCP/AWS billing export datasets and provisions scheduled daily cost summary views",
+      "Configurable Slack / Email webhook alert whenever daily spend jumps >30% over 7-day rolling average",
+      "Clean single-page cost breakdown dashboard by project, service, and AI/GPU SKU"
+    ],
+    "monetizationModel": "$29/mo for hosted multi-account alerts or $79 one-time self-hosted Terraform + dashboard kit",
+    "buildSpec": {
+      "prd": "Build a Node.js CLI + lightweight Next.js cost anomaly dashboard that queries BigQuery billing export tables (or AWS Cost Explorer), computes rolling 7-day baselines per service, and sends actionable Slack/email alerts when spend spikes.",
+      "schema": "tables: cloud_accounts (id, provider, dataset_ref, slack_webhook_url), daily_costs (id, account_id, date, service, cost_usd), alerts (id, account_id, triggered_at, delta_pct, message).",
+      "prompt": "Build a TypeScript CLI + Next.js dashboard for cloud billing anomaly monitoring. Connect to a BigQuery billing export table (with mock mode for local dev), compute daily spend by service against a 7-day baseline, flag >30% anomalies, and dispatch formatted Slack webhook alerts."
+    },
+    "evidence": [
+      {
+        "id": "ev-live-012a",
+        "source": "GitHub Issues",
+        "quote": "Resource to export billing data to BigQuery (181+ DevOps reactions on hashicorp/terraform-provider-google still open).",
+        "sourceUrl": "https://github.com/hashicorp/terraform-provider-google/issues/4848",
+        "author": "umairidris",
+        "publishedAt": "2019-11-08",
+        "isFreePreview": true
+      }
+    ],
+    "lastSeenAt": "2026-11-24",
+    "isSampleData": false
+  }
+]
