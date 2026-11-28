@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NeedsRadar 前后台分离 UI 原型蓝图</title>
+<style>
+  :root {
+    --bg: #f6f8f7;
+    --surface: #ffffff;
+    --surface-soft: #f1f5f3;
+    --border: #e2e8e4;
+    --border-strong: #cbd5cf;
+    --text: #0f1f18;
+    --muted: #55685e;
+    --subtle: #7e9086;
+    --emerald: #059669;
+    --emerald-dark: #064e3b;
+    --emerald-deep: #042f24;
+    --emerald-soft: #ecfdf5;
+    --emerald-border: #a7f3d0;
+    --blue: #2563eb;
+    --blue-soft: #eff6ff;
+    --amber: #d97706;
+    --amber-soft: #fffbeb;
+    --violet: #7c3aed;
+    --violet-soft: #f5f3ff;
+    --rose: #e11d48;
+    --rose-soft: #fff1f2;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(15,31,24,.05), 0 6px 18px rgba(15,31,24,.03);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; border: none; background: none; }
+
+  /* Mode Switcher Top Bar (Blueprint Frame) */
+  .blueprint-bar {
+    position: sticky; top: 0; z-index: 50;
+    background: #0b1b15; color: #e8f5ef;
+    padding: 8px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    border-bottom: 1px solid rgba(167,243,208,.18);
+  }
+  .blueprint-brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 13px; }
+  .blueprint-pill {
+    font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    background: rgba(16,185,129,.18); color: #6ee7b7; border: 1px solid rgba(110,231,183,.3);
+  }
+  .mode-switch {
+    display: inline-flex; background: rgba(255,255,255,.08); padding: 3px; border-radius: 9px; gap: 4px;
+  }
+  .mode-btn {
+    padding: 5px 12px; border-radius: 7px; font-size: 12px; font-weight: 600; color: #b7d2c6; transition: .15s;
+  }
+  .mode-btn.active { background: var(--emerald); color: #fff; box-shadow: 0 2px 8px rgba(5,150,105,.4); }
+  .mode-hint { font-size: 11px; color: #9ab8aa; }
+
+  /* Public Frontend Layout */
+  .pub-header {
+    background: rgba(255,255,255,.94); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+  }
+  .pub-header-inner {
+    max-width: 1280px; margin: 0 auto; height: 56px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; color: var(--text); }
+  .logo-badge {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, #059669, #10b981); color: #fff;
+    display: grid; place-items: center; font-weight: 800; font-size: 12px;
+  }
+  .pub-nav { display: flex; align-items: center; gap: 4px; overflow-x: auto; }
+  .pub-nav-btn {
+    padding: 6px 11px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--muted); white-space: nowrap;
+  }
+  .pub-nav-btn:hover { background: var(--surface-soft); color: var(--text); }
+  .pub-nav-btn.active { background: var(--emerald-soft); color: var(--emerald-dark); font-weight: 600; }
+  .pub-actions { display: flex; align-items: center; gap: 8px; }
+  .btn-outline {
+    padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: #fff; font-size: 12px; font-weight: 600; color: var(--text);
+  }
+  .btn-primary {
+    padding: 6px 13px; border-radius: 8px;
+    background: var(--emerald); color: #fff; font-size: 12px; font-weight: 600;
+  }
+  .btn-primary:hover { background: #047857; }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 18px 20px 40px; }
+
+  /* Hero Banner */
+  .hero-strip {
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf7 100%);
+    border: 1px solid var(--border); border-radius: 14px; padding: 16px 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    box-shadow: var(--shadow); margin-bottom: 14px;
+  }
+  .hero-kicker {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
+    color: var(--emerald-dark); background: var(--emerald-soft); border: 1px solid var(--emerald-border);
+    padding: 2px 9px; border-radius: 999px; margin-bottom: 6px;
+  }
+  .hero-strip h1 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 4px; }
+  .hero-strip p { color: var(--muted); font-size: 12.5px; }
+  .hero-stats { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mini-kpi {
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 8px 12px; min-width: 106px;
+  }
+  .mini-kpi small { display: block; font-size: 11px; color: var(--subtle); }
+  .mini-kpi strong { font-size: 16px; font-weight: 700; color: var(--text); }
+
+  /* Filter Toolbar (Full Width) */
+  .filter-panel {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 14px; box-shadow: var(--shadow);
+  }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .chip-group { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; justify-content: space-between; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--surface-soft); font-size: 12px; font-weight: 500; color: var(--muted);
+  }
+  .chip.active { background: var(--emerald); color: #fff; border-color: var(--emerald); font-weight: 600; }
+  .search-input {
+    flex: 1; min-width: 220px; padding: 7px 12px; border-radius: 8px;
+    border: 1px solid var(--border-strong); background: #fff; font-size: 12.5px;
+  }
+  .select-input {
+    padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border-strong);
+    background: #fff; font-size: 12px; color: var(--text);
+  }
+  .view-toggle { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 8px; overflow: hidden; }
+  .view-toggle button { padding: 6px 10px; font-size: 12px; background: #fff; color: var(--muted); }
+  .view-toggle button.active { background: var(--emerald-soft); color: var(--emerald-dark); font-weight: 600; }
+
+  /* Full-Width Demand Grid (NO split detail panel!) */
+  .demand-grid {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;
+  }
+  @media (max-width: 860px) { .demand-grid { grid-template-columns: 1fr; } }
+  .demand-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 15px 16px; box-shadow: var(--shadow); transition: .15s;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .demand-card:hover { border-color: var(--emerald); transform: translateY(-1px); }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .badges { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    border: 1px solid transparent;
+  }
+  .b-green { background: var(--emerald-soft); color: var(--emerald-dark); border-color: var(--emerald-border); }
+  .b-blue { background: var(--blue-soft); color: var(--blue); border-color: #bfdbfe; }
+  .b-violet { background: var(--violet-soft); color: var(--violet); border-color: #ddd6fe; }
+  .b-amber { background: var(--amber-soft); color: var(--amber); border-color: #fde68a; }
+  .b-gray { background: var(--surface-soft); color: var(--muted); border-color: var(--border); }
+  .scores { display: flex; gap: 6px; flex-shrink: 0; }
+  .score-box {
+    text-align: center; padding: 3px 8px; border-radius: 8px; background: var(--surface-soft); border: 1px solid var(--border);
+  }
+  .score-box.hi { background: var(--emerald-soft); border-color: var(--emerald-border); color: var(--emerald-dark); }
+  .score-box strong { display: block; font-size: 13px; line-height: 1.1; }
+  .score-box span { font-size: 9.5px; color: var(--subtle); font-weight: 700; }
+
+  .demand-title { font-size: 14.5px; font-weight: 700; color: var(--text); line-height: 1.4; }
+  .demand-pain { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .metrics-strip {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px;
+    background: var(--surface-soft); border-radius: 9px; padding: 8px 10px;
+  }
+  .m-cell small { display: block; font-size: 10.5px; color: var(--subtle); }
+  .m-cell strong { font-size: 13px; color: var(--text); }
+  .card-foot {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+    padding-top: 4px; border-top: 1px dashed var(--border);
+  }
+  .roots-inline { display: flex; gap: 5px; flex-wrap: wrap; }
+  .code-tag {
+    font-family: ui-monospace, SFMono-Regular, monospace; font-size: 11px;
+    background: #f3f6f4; border: 1px solid var(--border); padding: 2px 7px; border-radius: 6px; color: #2b4439;
+  }
+  .detail-link {
+    font-size: 12px; font-weight: 600; color: var(--emerald); display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  /* Data Table (used in Home Table View, Benchmarks, and Admin) */
+  .table-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; box-shadow: var(--shadow);
+  }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  th {
+    background: #f8faf9; color: var(--subtle); font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .03em; padding: 10px 14px; border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 12.5px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafdfb; }
+
+  /* Detail Page (/demand/[id]) */
+  .detail-shell { display: flex; flex-direction: column; gap: 14px; }
+  .surface-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 20px; box-shadow: var(--shadow);
+  }
+  .detail-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .detail-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 860px) { .detail-grid-3, .detail-grid-2 { grid-template-columns: 1fr; } }
+  .step-box {
+    background: var(--emerald-soft); border: 1px solid var(--emerald-border); border-radius: 10px; padding: 12px 14px;
+  }
+  .step-box small { font-size: 11px; font-weight: 700; color: var(--emerald); display: block; margin-bottom: 4px; }
+  .step-box p { font-size: 12.5px; color: #123628; }
+
+  /* Admin Workspace Shell (Backlink Helper style) */
+  .admin-shell { display: flex; min-height: 700px; }
+  .admin-sidebar {
+    width: 236px; flex-shrink: 0;
+    background: var(--emerald-deep); color: #d6ebe1;
+    padding: 18px 12px; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  @media (max-width: 860px) { .admin-shell { flex-direction: column; } .admin-sidebar { width: 100%; } }
+  .admin-nav-item {
+    width: 100%; text-align: left; padding: 9px 12px; border-radius: 9px;
+    font-size: 13px; font-weight: 500; color: #b4d3c5; display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .admin-nav-item:hover { background: rgba(255,255,255,.07); color: #fff; }
+  .admin-nav-item.active { background: var(--emerald); color: #fff; font-weight: 600; }
+  .admin-main { flex: 1; padding: 20px 24px; background: var(--bg); overflow-x: hidden; }
+  .admin-header {
+    display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--emerald); margin-bottom: 2px; }
+  .admin-header h2 { font-size: 20px; font-weight: 700; }
+  .admin-header p { font-size: 12.5px; color: var(--muted); }
+  .kpi-grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+  @media (max-width: 900px) { .kpi-grid-4 { grid-template-columns: repeat(2, 1fr); } }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow);
+  }
+  .kpi-card small { font-size: 11.5px; color: var(--subtle); display: block; margin-bottom: 4px; }
+  .kpi-card strong { font-size: 22px; font-weight: 700; display: block; margin-bottom: 2px; }
+  .kpi-card span { font-size: 11.5px; color: var(--emerald); font-weight: 600; }
+
+  .bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 110px; padding-top: 12px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; border-radius: 5px 5px 0 0; background: linear-gradient(180deg, #10b981, #059669); }
+  .bar-col span { font-size: 10px; color: var(--subtle); }
+
+  .switch {
+    display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600;
+  }
+  .switch.on { background: var(--emerald-soft); color: var(--emerald-dark); border: 1px solid var(--emerald-border); }
+  .switch.off { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+  .dot.on { background: #10b981; }
+  .dot.off { background: #9ca3af; }
+
+  .prog-track { width: 70px; height: 6px; background: #e5ece8; border-radius: 999px; overflow: hidden; display: inline-block; vertical-align: middle; margin-left: 6px; }
+  .prog-fill { height: 100%; background: var(--emerald); border-radius: 999px; }
+
+  .hidden { display: none !important; }
+  .toast {
+    position: fixed; bottom: 16px; right: 16px; z-index: 99;
+    background: #064e3b; color: #fff; padding: 9px 14px; border-radius: 10px;
+    font-size: 12.5px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="blueprint-bar">
+  <div class="blueprint-brand">
+    <span>NeedsRadar UI 改版设计蓝图</span>
+    <span class="blueprint-pill">已对齐线上 4,867 需求 / 340 对标站 / 9 采集源</span>
+  </div>
+  <div class="mode-switch">
+    <button class="mode-btn active" id="btn-mode-pub" onclick="switchMode('public')">公开前台 (Public)</button>
+    <button class="mode-btn" id="btn-mode-adm" onclick="switchMode('admin')">运营后台 (/admin)</button>
+  </div>
+  <div class="mode-hint">点击上方切换前后台，内部所有页签均可交互预览</div>
+</div>
+
+<!-- ================= PUBLIC FRONTEND ================= -->
+<div id="mode-public">
+  <header class="pub-header">
+    <div class="pub-header-inner">
+      <div class="logo">
+        <div class="logo-badge">NR</div>
+        <span>NeedsRadar</span>
+      </div>
+      <nav class="pub-nav">
+        <button class="pub-nav-btn active" data-pub="home" onclick="switchPub('home')">需求库</button>
+        <button class="pub-nav-btn" data-pub="detail" onclick="switchPub('detail')">需求详情页</button>
+        <button class="pub-nav-btn" data-pub="analyze" onclick="switchPub('analyze')">AI 验证点子</button>
+        <button class="pub-nav-btn" data-pub="signals" onclick="switchPub('signals')">实时信号 & 日报</button>
+        <button class="pub-nav-btn" data-pub="benchmarks" onclick="switchPub('benchmarks')">同行流量 & 词根</button>
+      </nav>
+      <div class="pub-actions">
+        <button class="btn-outline" onclick="switchMode('admin')">进入运营后台 →</button>
+        <button class="btn-primary" onclick="switchPub('analyze')">测我的想法</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 1. PUBLIC HOME (FULL WIDTH, NO SPLIT DETAIL PANEL) -->
+    <section id="pub-home">
+      <div class="hero-strip">
+        <div>
+          <span class="hero-kicker">● 全量公开情报 · 列表不再挤压分栏</span>
+          <h1>多平台真实痛点需求库：一眼看清频次、词根、竞争与可买域名</h1>
+          <p>聚合 13,179 条原始抱怨并去重为 4,867 条规范需求；每条直接铺满展示核心信号，点击卡片进入独立详情页。</p>
+        </div>
+        <div class="hero-stats">
+          <div class="mini-kpi"><small>规范需求</small><strong>4,867</strong></div>
+          <div class="mini-kpi"><small>条件齐备可做</small><strong>33</strong></div>
+          <div class="mini-kpi"><small>相似流量站</small><strong>340</strong></div>
+          <div class="mini-kpi"><small>Launch 卡</small><strong>300</strong></div>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <div class="chip-group">
+          <div class="chips" id="home-chips">
+            <button class="chip active" onclick="filterHome(this,'all')">全部已富化 300</button>
+            <button class="chip" onclick="filterHome(this,'ready')">条件齐备可做 33</button>
+            <button class="chip" onclick="filterHome(this,'indie')">独立小站居多 234</button>
+            <button class="chip" onclick="filterHome(this,'frontend')">48h 纯前端可做 48</button>
+            <button class="chip" onclick="filterHome(this,'A_NOW')">A_NOW 优先 11</button>
+          </div>
+          <div class="view-toggle">
+            <button class="active" id="vt-card" onclick="toggleHomeView('card')">卡片铺满视图</button>
+            <button id="vt-table" onclick="toggleHomeView('table')">表格对比视图</button>
+          </div>
+        </div>
+        <div class="filter-row">
+          <input class="search-input" id="home-search" oninput="renderHome()" placeholder="搜索痛点场景、延伸词根或域名关键词（如 moe、code review、invoice）..." />
+          <select class="select-input" id="home-tier" onchange="renderHome()">
+            <option value="all">全部开发形态</option>
+            <option value="pure_frontend">纯前端 / 本地计算</option>
+            <option value="light_api">轻量 API</option>
+            <option value="heavy_backend">深度集成</option>
+          </select>
+          <select class="select-input" id="home-sort" onchange="renderHome()">
+            <option value="roi">排序：综合 ROI / 条件优先</option>
+            <option value="similar">排序：同类痛点频次最高</option>
+            <option value="domains">排序：可买域名最多</option>
+            <option value="sites">排序：有流量相似站最多</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="home-card-list" class="demand-grid"></div>
+      <div id="home-table-list" class="table-card hidden"></div>
+    </section>
+
+    <!-- 2. DEMAND DETAIL PAGE (/demand/[id]) -->
+    <section id="pub-detail" class="detail-shell hidden"></section>
+
+    <!-- 3. AI IDEA ANALYZER (/ideas/analyze) -->
+    <section id="pub-analyze" class="hidden">
+      <div class="surface-card" style="max-width:860px;margin:0 auto;">
+        <span class="hero-kicker">DemandRadar 同款自验证 · 结合本地 4,867 条痛点库</span>
+        <h2 style="font-size:20px;margin-bottom:6px;">输入你的产品想法，实时匹配真实吐槽与同行流量</h2>
+        <p style="color:var(--muted);margin-bottom:14px;">描述目标用户、具体痛点和现有工具的不足（50–2000 字），系统检索本地需求库与 340 个对标站后输出评估。</p>
+        <textarea id="analyze-input" rows="4" class="search-input" style="width:100%;margin-bottom:10px;">我想做一个纯前端的本地 GGUF 大模型内存和硬件配置测算工具，帮 16G-32G 消费级显卡用户在运行 30B-120B MoE 模型前直接算出会不会 OOM，并生成最优 llama.cpp pinning 启动命令。</textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+          <span style="font-size:12px;color:var(--subtle);">检索范围：4,867 条规范痛点 · 340 个同行站点 · 实时 RDAP 域名</span>
+          <button class="btn-primary" onclick="runAnalyzeDemo()">开始检索并评估</button>
+        </div>
+        <div id="analyze-result" style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);"></div>
+      </div>
+    </section>
+
+    <!-- 4. LIVE SIGNALS & DAILY (/signals & /daily) -->
+    <section id="pub-signals" class="hidden">
+      <div class="detail-grid-2">
+        <div class="surface-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div>
+              <div class="eyebrow">LIVE SIGNALS · 13,179 原始库</div>
+              <h2 style="font-size:16px;">最新多平台真实痛点信号流</h2>
+            </div>
+            <span class="badge b-green">公开透明 · 含原帖外链</span>
+          </div>
+          <div id="signals-feed" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+        <div class="surface-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div>
+              <div class="eyebrow">DAILY REPORTS · 每日精选简报</div>
+              <h2 style="font-size:16px;">按日沉淀的高潜需求摘要</h2>
+            </div>
+            <span class="badge b-blue">每日 08:00 自动归档</span>
+          </div>
+          <div id="daily-feed" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. PEER BENCHMARKS & ROOTS (/benchmarks & /roots) -->
+    <section id="pub-benchmarks" class="hidden">
+      <div class="hero-strip">
+        <div>
+          <span class="hero-kicker">Backlink Helper 风格目录与数据表 · 340 个对标站</span>
+          <h1>同行流量基准站 & 可切入长尾词根</h1>
+          <p>公开查看独立站与大厂站分布、月估 UV、黑马标记与词根商业意图，直接辅助选品与外链分发。</p>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>站点 / 域名</th><th>类型</th><th>核心方向</th><th>月估 UV</th><th>黑马趋势</th><th>关联词根</th></tr>
+            </thead>
+            <tbody id="bench-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= ADMIN BACKEND CONTROL PLANE ================= -->
+<div id="mode-admin" class="admin-shell hidden">
+  <aside class="admin-sidebar">
+    <div>
+      <div style="display:flex;align-items:center;gap:8px;padding:4px 8px 16px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:14px;">
+        <div class="logo-badge">NR</div>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:#fff;">NeedsRadar Admin</div>
+          <div style="font-size:11px;color:#8cc7ae;">运营与采集控制面</div>
+        </div>
+      </div>
+      <button class="admin-nav-item active" data-adm="overview" onclick="switchAdmin('overview')"><span>采集漏斗总览</span><span>4,867</span></button>
+      <button class="admin-nav-item" data-adm="sources" onclick="switchAdmin('sources')"><span>采集源与频率调控</span><span>9 源</span></button>
+      <button class="admin-nav-item" data-adm="pipeline" onclick="switchAdmin('pipeline')"><span>预过滤 / AI 富化调度</span><span>规则</span></button>
+      <button class="admin-nav-item" data-adm="runs" onclick="switchAdmin('runs')"><span>运行日志与健康告警</span><span>实时</span></button>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:12px;">
+      <div style="font-size:11px;color:#8cc7ae;margin-bottom:8px;">Daemon 心跳：30s 动态轮询 · WAL 只读分离</div>
+      <button class="btn-primary" style="width:100%;" onclick="switchMode('public')">← 返回公开前台</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <!-- ADMIN 1: OVERVIEW -->
+    <section id="adm-overview">
+      <div class="admin-header">
+        <div>
+          <div class="eyebrow">CONTROL PLANE · OVERVIEW</div>
+          <h2>采集与过滤漏斗总览</h2>
+          <p>实时掌握从原始抓取、预过滤淘汰、去重聚合到 AI 富化与 Launch Card 生成的转化效率。</p>
+        </div>
+        <button class="btn-primary" onclick="toast('已下发全链路增量调度任务 (queued)')">+ 手动触发一轮全量调度</button>
+      </div>
+      <div class="kpi-grid-4">
+        <div class="kpi-card"><small>原始抓取记录</small><strong>13,179</strong><span>7 个启用源活跃采集</span></div>
+        <div class="kpi-card"><small>预过滤拦截</small><strong>4,950</strong><span>拦截率 37.6%（噪声/过短）</span></div>
+        <div class="kpi-card"><small>规范去重需求</small><strong>4,867</strong><span>已覆盖 SERP 分级校验</span></div>
+        <div class="kpi-card"><small>深度富化 & 发射卡</small><strong>300</strong><span>33 条标记条件齐备可做</span></div>
+      </div>
+      <div class="detail-grid-2">
+        <div class="surface-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <strong style="font-size:14px;">过去 12 轮新增规范需求趋势</strong>
+            <span style="font-size:11.5px;color:var(--subtle);">累计 238,899 次源调度</span>
+          </div>
+          <div class="bar-chart" id="adm-chart"></div>
+        </div>
+        <div class="surface-card">
+          <strong style="font-size:14px;display:block;margin-bottom:10px;">预过滤淘汰原因分布 (4,950 条)</strong>
+          <div style="display:flex;flex-direction:column;gap:9px;">
+            <div><div style="display:flex;justify-content:space-between;"><span>缺少具体痛点动词 / 求助意图</span><strong>42%</strong></div><div class="prog-track" style="width:100%;margin:4px 0 0;"><div class="prog-fill" style="width:42%"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;"><span>招聘帖 / 纯推广新闻 / 长度不足</span><strong>31%</strong></div><div class="prog-track" style="width:100%;margin:4px 0 0;"><div class="prog-fill" style="width:31%;background:#2563eb"></div></div></div>
+            <div><div style="display:flex;justify-content:space-between;"><span>语义重复合并 (合并入已有需求)</span><strong>27%</strong></div><div class="prog-track" style="width:100%;margin:4px 0 0;"><div class="prog-fill" style="width:27%;background:#d97706"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN 2: SOURCES & FREQUENCY -->
+    <section id="adm-sources" class="hidden">
+      <div class="admin-header">
+        <div>
+          <div class="eyebrow">SOURCE REGISTRY OVERRIDES</div>
+          <h2>采集源开关与轮询频率调控</h2>
+          <p>覆盖代码默认 300s 限制：修改将写入 SQLite source_overrides 表，守护进程在下一轮 30s 心跳自动热加载。</p>
+        </div>
+        <button class="btn-primary" onclick="toast('所有采集源频率覆盖策略已保存到 source_overrides')">保存全部策略</button>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>采集源名称</th><th>状态</th><th>轮询间隔 (s)</th><th>单轮上限</th><th>健康度 / 失败</th><th>已入库数</th><th>即时操作</th></tr>
+            </thead>
+            <tbody id="adm-sources-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN 3: PIPELINE RULES & QUOTAS -->
+    <section id="adm-pipeline" class="hidden">
+      <div class="admin-header">
+        <div>
+          <div class="eyebrow">SYSTEM SETTINGS & CADENCE</div>
+          <h2>预过滤、AI 评分与富化调度策略</h2>
+          <p>统一管理入库门槛、SERP/LLM 每日配额、RDAP 域名探测并发和 Launch Card 每日生成上限。</p>
+        </div>
+        <button class="btn-primary" onclick="toast('调度与配额参数已写入 system_settings')">保存调度参数</button>
+      </div>
+      <div class="detail-grid-2">
+        <div class="surface-card">
+          <h3 style="font-size:14px;margin-bottom:12px;">1. 清洗与预过滤阈值</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="display:flex;justify-content:space-between;align-items:center;"><span>最小正文字数限制</span><input type="number" value="45" class="select-input" style="width:110px;"></label>
+            <label style="display:flex;justify-content:space-between;align-items:center;"><span>语义去重余弦阈值</span><input type="text" value="0.82" class="select-input" style="width:110px;"></label>
+            <label style="display:flex;justify-content:space-between;align-items:center;"><span>排除营销/招聘黑名单</span><span class="switch on"><i class="dot on"></i>已启用 (18 规则)</span></label>
+          </div>
+        </div>
+        <div class="surface-card">
+          <h3 style="font-size:14px;margin-bottom:12px;">2. AI 富化、SERP 与发射卡配额</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <label style="display:flex;justify-content:space-between;align-items:center;"><span>每日 SERP 验证上限</span><input type="number" value="250" class="select-input" style="width:110px;"></label>
+            <label style="display:flex;justify-content:space-between;align-items:center;"><span>每日深度富化 (Intel + Launch Card)</span><input type="number" value="40" class="select-input" style="width:110px;"></label>
+            <label style="display:flex;justify-content:space-between;align-items:center;"><span>RDAP 域名并发探测</span><input type="number" value="4" class="select-input" style="width:110px;"></label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN 4: RUNS & HEALTH LOGS -->
+    <section id="adm-runs" class="hidden">
+      <div class="admin-header">
+        <div>
+          <div class="eyebrow">EXECUTION LOGS · 238,899 TOTAL RUNS</div>
+          <h2>调度运行日志与异常重试</h2>
+          <p>追踪每个采集源及手动触发任务的耗时、新增条数、淘汰条数与错误上下文。</p>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>任务 / 采集源</th><th>触发方式</th><th>状态</th><th>新增 / 淘汰</th><th>耗时</th><th>最近完成时间</th><th>操作</th></tr>
+            </thead>
+            <tbody id="adm-runs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="toast-box" class="toast hidden"></div>
+
+<script>
+const DEMANDS = [
+  {
+    id: "moe-oom-calc",
+    title: "本地开发者在 16G-32G 消费级设备上运行 30B-120B MoE 模型时频繁 OOM 或硬解 swap 卡顿",
+    pain: "llama.cpp 原生全加载或纯 mmap 极易触发磁盘雪崩，缺乏针对消费级内存+NVMe 的热点专家层锁与参数一键生成工具。",
+    verdict: "ready", verdictLabel: "条件齐备可做", grade: "A_NOW",
+    tier: "pure_frontend", tierLabel: "48h 纯前端可做",
+    monetization: "买断 / Pro", trend: "需求上升", landscape: "独立小站居多",
+    opp: 86, roi: 91, similarCount: 16, roots: ["llm memory management", "llm memory calculator", "moe vram estimator"],
+    longtailsCount: 8, trafficSitesCount: 3, maxUv: "42K/月", domainsCount: 5,
+    availableDomains: ["moecalc.dev", "vramfit.io", "ggufcalc.com"],
+    loop: {
+      in: "输入物理内存/显存规格、NVMe 吞吐及目标 MoE 模型的 GGUF 链接或元数据。",
+      proc: "纯前端解析 GGUF 专家层拓扑与权重大小，测算热区/冷区内存水位矩阵。",
+      out: "秒级输出内存 waterfall 分布图、预期 tok/s 与一键复制的 llama.cpp pinning 启动脚本。"
+    },
+    posts: [
+      { src: "HackerNews", score: 142, text: "Running Qwen-30B MoE on 24GB RAM keeps thrashing swap unless I manually guess --override-tensor..." },
+      { src: "GitHub Issues", score: 89, text: "Feature request: simple calculator for MoE active vs total expert memory footprint before downloading 40GB GGUF." }
+    ],
+    sites: [
+      { domain: "vramcalculator.com", type: "indie", uv: "38.4K", note: "仅支持稠密模型，未覆盖 MoE 专家层" },
+      { domain: "canirun.ai", type: "indie", uv: "21.0K", note: "偏硬件推荐，缺少可执行命令行参数导出" }
+    ]
+  },
+  {
+    id: "llm-pr-prereview",
+    title: "开发者用 LLM 生成大量代码后，commit 前缺乏快速本地自审与闭环修复工具",
+    pain: "每次提 PR 都要等远端 AI Bot 或人工慢评，缺乏在 git commit 前秒级扫描死代码、接口漂移并原地修复的轻量工具。",
+    verdict: "ready", verdictLabel: "条件齐备可做", grade: "A_NOW",
+    tier: "light_api", tierLabel: "轻量 API 可做",
+    monetization: "订阅制", trend: "需求上升", landscape: "独立小站居多",
+    opp: 81, roi: 85, similarCount: 11, roots: ["ai pr review cli", "local code review", "pre-commit ai"],
+    longtailsCount: 7, trafficSitesCount: 5, maxUv: "64K/月", domainsCount: 2,
+    availableDomains: ["precommitai.dev", "diffcheck.sh"],
+    loop: {
+      in: "读取本地 git diff --staged 变更块与项目 AST 依赖。",
+      proc: "轻量规则 + 局部上下文模型聚焦高危回归、未处理异常与类型漂移。",
+      out: "终端高亮风险清单并生成可直接 git apply 的补丁。"
+    },
+    posts: [
+      { src: "Reddit", score: 215, text: "Tired of waiting 4 minutes for GitHub AI reviewer to catch obvious missing await in Cursor-generated diffs." }
+    ],
+    sites: [
+      { domain: "coderabbit.ai", type: "giant", uv: "180K", note: "重度绑定 GitHub/GitLab 云端 PR，本地阶段太重" },
+      { domain: "pr-agent.dev", type: "indie", uv: "28.5K", note: "配置繁琐，面向团队而非个人 commit 前秒审" }
+    ]
+  },
+  {
+    id: "claude-classroom-sandbox",
+    title: "技术讲师给学生上 AI Coding 课时，每人系统环境不统一且 API 额度难按人分发",
+    pain: "Windows/Mac/Linux 混杂导致前半节课全在修环境，且直接发 API Key 存在额度被刷爆与沙盒失控风险。",
+    verdict: "community_first", verdictLabel: "社区切入", grade: "B_QUEUE",
+    tier: "light_api", tierLabel: "轻量 API 可做",
+    monetization: "按席位 / 课次", trend: "需求上升", landscape: "蓝海缺口",
+    opp: 78, roi: 82, similarCount: 7, roots: ["coding workshop sandbox", "classroom api proxy", "student ai quota"],
+    longtailsCount: 5, trafficSitesCount: 2, maxUv: "15K/月", domainsCount: 4,
+    availableDomains: ["classsandbox.io", "teachcli.com", "labquota.dev"],
+    loop: {
+      in: "讲师创建课程房间，设置每位学生 $2 额度上限与预设仓库模板。",
+      proc: "生成免安装浏览器终端/代理 Token，实时审计费用与命令。",
+      out: "学生扫码即入统一环境开练，下课自动回收密钥。"
+    },
+    posts: [
+      { src: "Workflow_Forums", score: 54, text: "Spent 45 mins of a 90 min workshop fixing node/python paths on 10 student laptops." }
+    ],
+    sites: [
+      { domain: "codespaces.new", type: "giant", uv: "500K+", note: "面向开发流程，无课堂按人发 AI 额度与一键清场能力" }
+    ]
+  },
+  {
+    id: "ai-doc-debloat",
+    title: "用 LLM 生成 README 与设计文档后充斥空话套话，开发者必须逐段人工删改",
+    pain: "AI 生成的技术文档充满 over-explanation、重复铺垫和套话，直接粘贴显得非常业余。",
+    verdict: "ready", verdictLabel: "条件齐备可做", grade: "B_QUEUE",
+    tier: "pure_frontend", tierLabel: "48h 纯前端可做",
+    monetization: "免费 + Pro", trend: "稳步增长", landscape: "独立小站居多",
+    opp: 75, roi: 79, similarCount: 9, roots: ["ai text humanizer dev", "readme linter", "markdown debloat"],
+    longtailsCount: 6, trafficSitesCount: 4, maxUv: "31K/月", domainsCount: 3,
+    availableDomains: ["cleanmd.dev", "nofluffdoc.com"],
+    loop: {
+      in: "粘贴 Markdown 技术文档或 README。",
+      proc: "纯前端正则 + 句式密度检测标红“AI 套话模板”，支持一键压缩为工程师直白风格。",
+      out: "输出精简前后 Diff 对比与可直接复制的干净 Markdown。"
+    },
+    posts: [
+      { src: "HackerNews", score: 96, text: "I just want a linter that strips 'In today's fast-paced world' and 'delve into' from PR descriptions." }
+    ],
+    sites: [
+      { domain: "hemingwayapp.com", type: "indie", uv: "95K", note: "面向通用英文写作，不识别代码与 Markdown 结构" }
+    ]
+  }
+];
+
+const SIGNALS = [
+  { src: "HackerNews", time: "12 分钟前", text: "有人做过把 40GB GGUF 拆成冷热层并在 24G 显存/内存上自动算 pinning 参数的小工具吗？每次试错太痛苦了。", url: "news.ycombinator.com/item?id=4291..." },
+  { src: "GitHub_Issues", time: "28 分钟前", text: "We need a lightweight pre-commit AI sanity checker that runs locally before opening a PR.", url: "github.com/org/repo/issues/812" },
+  { src: "Reddit_Direct", time: "1 小时前", text: "Why do all invoice proration tools require enterprise sales calls? I just want a CSV verification script.", url: "reddit.com/r/SaaS/comments/..." },
+  { src: "StackExchange", time: "2 小时前", text: "How to cap API token spending per student in a 2-hour coding bootcamp without sharing master keys?", url: "stackoverflow.com/questions/..." }
+];
+
+const DAILY_REPORTS = [
+  { date: "2026-11-28", count: 14, highlight: "本地推理内存测算、Commit 前轻量 AI 自审、课堂沙盒代理成今日高潜 Top 3", topGrade: "A_NOW × 3" },
+  { date: "2026-11-27", count: 19, highlight: "Shopify 退货折算核对器、SaaS 用量计费对账小工具需求连续 5 天出现", topGrade: "A_NOW × 2" },
+  { date: "2026-11-26", count: 16, highlight: "Markdown 去除 AI 套话 Linter、Mac 本地隐私 LaTeX 工具热度上升", topGrade: "B_QUEUE × 11" }
+];
+
+const BENCHMARKS = [
+  { domain: "vramcalculator.com", type: "独立站", cat: "AI 硬件测算", uv: "38.4K / 月", horse: "黑马 +184%", root: "llm memory calculator" },
+  { domain: "hemingwayapp.com", type: "独立站", cat: "开发者写作", uv: "95.0K / 月", horse: "稳健 +22%", root: "markdown linter" },
+  { domain: "coderabbit.ai", type: "大厂/融资站", cat: "代码审查", uv: "180K / 月", horse: "高竞争", root: "ai pr review" },
+  { domain: "theresanaiforthat.com", type: "目录站", cat: "外链与流量入口", uv: "4.8M / 月", horse: "高权重 DA 78", root: "ai tool directory" },
+  { domain: "toolify.ai", type: "目录站", cat: "AI 工具榜单", uv: "860K / 月", horse: "收录快 DA 69", root: "ai tools list" }
+];
+
+const SOURCES = [
+  { name: "HackerNews_Firebase", enabled: true, interval: 300, limit: 80, ok: "99.4%", fails: 0, count: 1420 },
+  { name: "HackerNews_Algolia", enabled: true, interval: 300, limit: 100, ok: "99.1%", fails: 0, count: 980 },
+  { name: "GitHub_Issues", enabled: true, interval: 600, limit: 60, ok: "97.8%", fails: 1, count: 845 },
+  { name: "StackExchange_Questions", enabled: true, interval: 900, limit: 50, ok: "98.9%", fails: 0, count: 612 },
+  { name: "Reddit_Direct", enabled: true, interval: 300, limit: 80, ok: "94.2%", fails: 2, count: 590 },
+  { name: "Workflow_Forums", enabled: true, interval: 1800, limit: 40, ok: "99.0%", fails: 0, count: 245 },
+  { name: "Builder_Communities", enabled: true, interval: 1800, limit: 40, ok: "98.5%", fails: 0, count: 175 },
+  { name: "DuckDuckGo_Auxiliary", enabled: false, interval: 3600, limit: 30, ok: "82.0%", fails: 4, count: 0 },
+  { name: "GitHub_Releases_Atom", enabled: false, interval: 3600, limit: 30, ok: "96.0%", fails: 0, count: 0 }
+];
+
+const RUNS = [
+  { target: "HackerNews_Firebase", trigger: "Daemon 定时", status: "success", delta: "+14 入库 / -9 淘汰", dur: "3.2s", time: "2 分钟前" },
+  { target: "GitHub_Issues", trigger: "Daemon 定时", status: "success", delta: "+9 入库 / -18 淘汰", dur: "5.8s", time: "6 分钟前" },
+  { target: "v3_market_intel_enrichment", trigger: "后台富化批处理", status: "success", delta: "富化 10 条 / RDAP 35 域名", dur: "41.0s", time: "14 分钟前" },
+  { target: "Reddit_Direct", trigger: "手动单次触发", status: "retry", delta: "+4 入库 / 速率限制退避", dur: "8.4s", time: "22 分钟前" }
+];
+
+let homeFilter = "all";
+let homeView = "card";
+let selectedDemand = DEMANDS[0];
+
+function toast(msg) {
+  const el = document.getElementById("toast-box");
+  el.textContent = msg;
+  el.classList.remove("hidden");
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => el.classList.add("hidden"), 2600);
+}
+
+function switchMode(mode) {
+  document.getElementById("mode-public").classList.toggle("hidden", mode !== "public");
+  document.getElementById("mode-admin").classList.toggle("hidden", mode !== "admin");
+  document.getElementById("btn-mode-pub").classList.toggle("active", mode === "public");
+  document.getElementById("btn-mode-adm").classList.toggle("active", mode === "admin");
+}
+
+function switchPub(tab) {
+  ["home", "detail", "analyze", "signals", "benchmarks"].forEach(t => {
+    document.getElementById("pub-" + t).classList.toggle("hidden", t !== tab);
+  });
+  document.querySelectorAll(".pub-nav-btn").forEach(b => b.classList.toggle("active", b.dataset.pub === tab));
+  if (tab === "detail") renderDetail();
+}
+
+function switchAdmin(tab) {
+  ["overview", "sources", "pipeline", "runs"].forEach(t => {
+    document.getElementById("adm-" + t).classList.toggle("hidden", t !== tab);
+  });
+  document.querySelectorAll(".admin-nav-item").forEach(b => b.classList.toggle("active", b.dataset.adm === tab));
+}
+
+function filterHome(btn, key) {
+  homeFilter = key;
+  document.querySelectorAll("#home-chips .chip").forEach(c => c.classList.remove("active"));
+  btn.classList.add("active");
+  renderHome();
+}
+
+function toggleHomeView(view) {
+  homeView = view;
+  document.getElementById("vt-card").classList.toggle("active", view === "card");
+  document.getElementById("vt-table").classList.toggle("active", view === "table");
+  document.getElementById("home-card-list").classList.toggle("hidden", view !== "card");
+  document.getElementById("home-table-list").classList.toggle("hidden", view !== "table");
+}
+
+function openDetail(id) {
+  selectedDemand = DEMANDS.find(d => d.id === id) || DEMANDS[0];
+  switchPub("detail");
+}
+
+function renderHome() {
+  const q = (document.getElementById("home-search").value || "").toLowerCase();
+  const tier = document.getElementById("home-tier").value;
+  const sort = document.getElementById("home-sort").value;
+
+  let list = DEMANDS.filter(d => {
+    if (homeFilter === "ready" && d.verdict !== "ready") return false;
+    if (homeFilter === "indie" && d.landscape !== "独立小站居多") return false;
+    if (homeFilter === "frontend" && d.tier !== "pure_frontend") return false;
+    if (homeFilter === "A_NOW" && d.grade !== "A_NOW") return false;
+    if (tier !== "all" && d.tier !== tier) return false;
+    if (q && !(d.title + d.pain + d.roots.join(" ")).toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (sort === "similar") list.sort((a,b) => b.similarCount - a.similarCount);
+  else if (sort === "domains") list.sort((a,b) => b.domainsCount - a.domainsCount);
+  else if (sort === "sites") list.sort((a,b) => b.trafficSitesCount - a.trafficSitesCount);
+  else list.sort((a,b) => b.roi - a.roi);
+
+  document.getElementById("home-card-list").innerHTML = list.map(d => `
+    <article class="demand-card">
+      <div class="card-top">
+        <div class="badges">
+          <span class="badge ${d.verdict==='ready'?'b-green':'b-amber'}">${d.verdictLabel}</span>
+          <span class="badge b-blue">${d.grade}</span>
+          <span class="badge b-violet">${d.tierLabel}</span>
+          <span class="badge b-gray">${d.monetization}</span>
+        </div>
+        <div class="scores">
+          <div class="score-box hi"><strong>${d.roi}</strong><span>ROI</span></div>
+          <div class="score-box"><strong>${d.opp}</strong><span>OPP</span></div>
+        </div>
+      </div>
+      <div class="demand-title">${d.title}</div>
+      <div class="demand-pain">${d.pain}</div>
+      <div class="metrics-strip">
+        <div class="m-cell"><small>同类痛点</small><strong>${d.similarCount} 次</strong></div>
+        <div class="m-cell"><small>延伸长尾词</small><strong>${d.longtailsCount} 个</strong></div>
+        <div class="m-cell"><small>有流量相似站</small><strong>${d.trafficSitesCount} 个 (${d.maxUv})</strong></div>
+        <div class="m-cell"><small>可买域名</small><strong>${d.domainsCount} 个</strong></div>
+      </div>
+      <div class="card-foot">
+        <div class="roots-inline">${d.roots.map(r => `<span class="code-tag">${r}</span>`).join("")}</div>
+        <button class="detail-link" onclick="openDetail('${d.id}')">进入独立详情页 →</button>
+      </div>
+    </article>
+  `).join("");
+
+  document.getElementById("home-table-list").innerHTML = `
+    <div class="table-wrap"><table>
+      <thead><tr><th>需求痛点</th><th>分级 / 形态</th><th>同类频次</th><th>相似站 / 最高UV</th><th>可买域名</th><th>ROI / OPP</th><th>操作</th></tr></thead>
+      <tbody>
+        ${list.map(d => `
+          <tr>
+            <td style="max-width:340px;"><strong>${d.title}</strong><div style="font-size:11px;color:var(--subtle);margin-top:2px;">${d.roots.join(" · ")}</div></td>
+            <td><span class="badge b-green">${d.verdictLabel}</span> <span class="badge b-violet">${d.tierLabel}</span></td>
+            <td><strong>${d.similarCount} 次</strong></td>
+            <td>${d.trafficSitesCount} 个 · ${d.maxUv}</td>
+            <td><strong>${d.domainsCount} 个</strong> (${d.availableDomains[0]})</td>
+            <td><strong style="color:var(--emerald);">${d.roi}</strong> / ${d.opp}</td>
+            <td><button class="btn-outline" onclick="openDetail('${d.id}')">查看详情</button></td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table></div>
+  `;
+}
+
+function renderDetail() {
+  const d = selectedDemand;
+  document.getElementById("pub-detail").innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <button class="btn-outline" onclick="switchPub('home')">← 返回全宽需求列表</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-outline" onclick="toast('已复制 48h MVP 开发 Prompt')">复制 AI 开发 Prompt</button>
+        <button class="btn-primary" onclick="toast('已导出完整报告 (.md)')">导出完整报告 (.md)</button>
+      </div>
+    </div>
+
+    <div class="surface-card">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+        <div class="badges">
+          <span class="badge b-green">${d.verdictLabel}</span>
+          <span class="badge b-blue">${d.grade}</span>
+          <span class="badge b-violet">${d.tierLabel}</span>
+          <span class="badge b-gray">${d.landscape}</span>
+        </div>
+        <div class="scores">
+          <div class="score-box hi"><strong>${d.roi}</strong><span>ROI 综合分</span></div>
+          <div class="score-box"><strong>${d.opp}</strong><span>OPP 机会分</span></div>
+        </div>
+      </div>
+      <h1 style="font-size:20px;margin-bottom:8px;">${d.title}</h1>
+      <p style="color:var(--muted);margin-bottom:14px;">${d.pain}</p>
+      <div class="detail-grid-3">
+        <div class="step-box"><small>01 · 用户输入什么 (Input)</small><p>${d.loop.in}</p></div>
+        <div class="step-box"><small>02 · 核心处理机制 (Process)</small><p>${d.loop.proc}</p></div>
+        <div class="step-box"><small>03 · 5 秒交付结果 (Output)</small><p>${d.loop.out}</p></div>
+      </div>
+    </div>
+
+    <div class="detail-grid-2">
+      <div class="surface-card">
+        <h3 style="font-size:14px;margin-bottom:10px;">核心词根与全量原帖证据（公开直出不打码）</h3>
+        <div class="roots-inline" style="margin-bottom:12px;">${d.roots.map(r => `<span class="code-tag">${r}</span>`).join("")}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${d.posts.map(p => `<div style="background:var(--surface-soft);padding:10px 12px;border-radius:8px;border:1px solid var(--border);">
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--subtle);margin-bottom:4px;"><strong>${p.src}</strong><span>点赞/热度 ${p.score}</span></div>
+            <div style="font-size:12.5px;">${p.text}</div>
+          </div>`).join("")}
+        </div>
+      </div>
+
+      <div class="surface-card">
+        <h3 style="font-size:14px;margin-bottom:10px;">相似流量对标站 & RDAP 可注册域名</h3>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;">
+          ${d.sites.map(s => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid var(--border);border-radius:8px;">
+            <div><strong>${s.domain}</strong> <span class="badge b-gray">${s.type}</span><div style="font-size:11.5px;color:var(--muted);">${s.note}</div></div>
+            <strong style="color:var(--emerald);">${s.uv}</strong>
+          </div>`).join("")}
+        </div>
+        <div style="font-size:12px;color:var(--subtle);margin-bottom:6px;">RDAP 已验证可注册词根域名：</div>
+        <div class="roots-inline">${d.availableDomains.map(dom => `<span class="badge b-green">${dom} · 可买</span>`).join("")}</div>
+      </div>
+    </div>
+  `;
+}
+
+function runAnalyzeDemo() {
+  const val = document.getElementById("analyze-input").value.trim();
+  document.getElementById("analyze-result").innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+      <strong>分析完成：高度匹配库内已有高分需求</strong>
+      <div class="badges"><span class="badge b-green">预估 ROI 91</span><span class="badge b-blue">预估 OPP 86</span><span class="badge b-violet">48h 纯前端可验证</span></div>
+    </div>
+    <p style="color:var(--muted);margin-bottom:10px;">针对你的输入（${val.length} 字），系统在 4,867 条规范痛点中命中 <strong>16 条高度相似吐槽</strong>，并检测到现有竞品 <code>vramcalculator.com</code>（月 UV 38.4K）尚未覆盖 MoE 专家层测算，具备明确切入缝隙。</p>
+    <button class="btn-outline" onclick="openDetail('moe-oom-calc')">查看完整匹配需求与 Launch Card →</button>
+  `;
+}
+
+function renderSignalsAndDaily() {
+  document.getElementById("signals-feed").innerHTML = SIGNALS.map(s => `
+    <div style="padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-soft);">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--subtle);margin-bottom:4px;">
+        <strong>${s.src}</strong><span>${s.time}</span>
+      </div>
+      <div style="font-size:12.5px;margin-bottom:4px;">${s.text}</div>
+      <div style="font-size:11px;color:var(--emerald);">${s.url}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("daily-feed").innerHTML = DAILY_REPORTS.map(r => `
+    <div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong>${r.date} 日报</strong>
+        <span class="badge b-green">新增 ${r.count} 个机会 · ${r.topGrade}</span>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);">${r.highlight}</p>
+    </div>
+  `).join("");
+}
+
+function renderBenchmarks() {
+  document.getElementById("bench-tbody").innerHTML = BENCHMARKS.map(b => `
+    <tr>
+      <td><strong>${b.domain}</strong></td>
+      <td><span class="badge b-gray">${b.type}</span></td>
+      <td>${b.cat}</td>
+      <td><strong>${b.uv}</strong></td>
+      <td><span class="badge b-green">${b.horse}</span></td>
+      <td><span class="code-tag">${b.root}</span></td>
+    </tr>
+  `).join("");
+}
+
+function renderAdmin() {
+  const bars = [42, 58, 51, 69, 64, 77, 73, 86, 81, 95, 89, 100];
+  document.getElementById("adm-chart").innerHTML = bars.map((h,i) => `
+    <div class="bar-col"><div class="bar" style="height:${h}%"></div><span>R${i+1}</span></div>
+  `).join("");
+
+  document.getElementById("adm-sources-tbody").innerHTML = SOURCES.map((s, idx) => `
+    <tr>
+      <td><strong>${s.name}</strong></td>
+      <td><button class="switch ${s.enabled?'on':'off'}" onclick="toggleSrc(${idx})"><i class="dot ${s.enabled?'on':'off'}"></i>${s.enabled?'启用':'停用'}</button></td>
+      <td>
+        <select class="select-input" onchange="toast('${s.name} 频率已调整为 '+this.value+'s')">
+          ${[60,300,600,900,1800,3600].map(v => `<option value="${v}" ${v===s.interval?'selected':''}>每 ${v}s (${v>=60?Math.round(v/60)+'分钟':v+'秒'})</option>`).join("")}
+        </select>
+      </td>
+      <td><input type="number" value="${s.limit}" class="select-input" style="width:74px;"></td>
+      <td>${s.ok} <span class="prog-track"><span class="prog-fill" style="width:${s.ok}"></span></span> <small style="color:${s.fails?'var(--rose)':'var(--subtle)'}">(${s.fails} 错)</small></td>
+      <td><strong>${s.count}</strong></td>
+      <td><button class="btn-outline" onclick="toast('已提交 ${s.name} 单次采集任务')">立即抓取</button></td>
+    </tr>
+  `).join("");
+
+  document.getElementById("adm-runs-tbody").innerHTML = RUNS.map(r => `
+    <tr>
+      <td><strong>${r.target}</strong></td>
+      <td>${r.trigger}</td>
+      <td><span class="badge ${r.status==='success'?'b-green':'b-amber'}">${r.status==='success'?'成功':'限流退避'}</span></td>
+      <td>${r.delta}</td>
+      <td>${r.dur}</td>
+      <td>${r.time}</td>
+      <td><button class="btn-outline" onclick="toast('已重新入队 ${r.target}')">重跑</button></td>
+    </tr>
+  `).join("");
+}
+
+function toggleSrc(idx) {
+  SOURCES[idx].enabled = !SOURCES[idx].enabled;
+  renderAdmin();
+  toast(`${SOURCES[idx].name} 已${SOURCES[idx].enabled ? "启用" : "停用"}`);
+}
+
+renderHome();
+renderSignalsAndDaily();
+renderBenchmarks();
+renderAdmin();
+runAnalyzeDemo();
+</script>
+</body>
+</html>
